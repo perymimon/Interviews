@@ -1,53 +1,31 @@
-import React, { useState } from 'react';
 import {
-    ToggleButton,
-    ToggleButtonGroup,
-    Container,
-    TextField,
-    Typography,
-    Box,
-    List,
-    ListItem,
-    ListItemText,
-    Paper,
-    CircularProgress, // Import CircularProgress for the loader
-} from '@mui/material';
-import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
+    Box, CircularProgress, Container, List, ListItem, ListItemText, Paper,
+    TextField, ToggleButton, ToggleButtonGroup, Typography,
+} from '@mui/material'
+import React, {useState} from 'react'
+import {useStarWarData} from './data/star-war-data.js'
 
 function App() {
-    const [selectedButtons, setSelectedButtons] = useState([]); // Toggleable buttons state
-    const [searchQuery, setSearchQuery] = useState(''); // Search input state
-    const [selectedItem, setSelectedItem] = useState(null); // Selected item state
+    const [endpoints, setendpoints] = useState([])
+    const [searchQuery, setSearchQuery] = useState('')
+    const [selectedItem, setSelectedItem] = useState(null)
 
-    // Handle toggle button changes
-    const handleButtonChange = (event, newSelection) => {
-        setSelectedButtons(newSelection);
-    };
+    const {data, isLoading, isError} = useStarWarData({
+        searchQuery:searchQuery,
+        entities:endpoints,
+    })
 
-    // Handle search input changes
-    const handleSearchChange = (event) => {
-        setSearchQuery(event.target.value);
-    };
+    const handleSelection = (event, newSelection) => {
+        setendpoints(newSelection)
+    }
 
-    // Fetch data using TanStack Query
-    const { data, isLoading, isError } = useQuery({
-        queryKey: ['starWarsData', selectedButtons[0], searchQuery], // Unique key for caching
-        queryFn: async () => {
-            if (selectedButtons.length > 0) {
-                const endpoint = selectedButtons[0]; // Use the first selected button
-                const response = await axios.get(`https://swapi.dev/api/${endpoint}/?search=${searchQuery}`);
-                return response.data.results;
-            }
-            return [];
-        },
-        enabled: selectedButtons.length > 0, // Only fetch data if a button is selected
-    });
+    const handleSearching = (event) => {
+        setSearchQuery(event.target.value)
+    }
 
-    // Handle item selection from the list
-    const handleItemClick = (item) => {
-        setSelectedItem(item);
-    };
+    const handleSelectItem = (item) => {
+        setSelectedItem(item)
+    }
 
     return (
         <Container maxWidth="lg" style={{ marginTop: '20px' }}>
@@ -56,26 +34,26 @@ function App() {
                 <Box display="flex" alignItems="center" gap={2}>
                     <TextField
                         label="Search"
-                        variant="outlined"
+                        variant="standard"
                         value={searchQuery}
-                        onChange={handleSearchChange}
+                        helperText="Query starWars db"
+                        onChange={handleSearching}
                         style={{ width: '300px' }}
                     />
                     {/* Loader Indicator */}
                     {isLoading && <CircularProgress size={24} />}
                 </Box>
                 <ToggleButtonGroup
-                    value={selectedButtons}
-                    onChange={handleButtonChange}
-                    aria-label="data selection"
+                    value={endpoints}
+                    onChange={handleSelection}
                 >
-                    <ToggleButton value="planets" aria-label="planets">
+                    <ToggleButton value="planets" >
                         Planets
                     </ToggleButton>
-                    <ToggleButton value="people" aria-label="people">
+                    <ToggleButton value="people" >
                         People
                     </ToggleButton>
-                    <ToggleButton value="films" aria-label="films">
+                    <ToggleButton value="films" >
                         Films
                     </ToggleButton>
                 </ToggleButtonGroup>
@@ -83,17 +61,17 @@ function App() {
 
             {/* Main Content */}
             <Box display="flex" gap={3}>
-                {/* Left Side: List of Results */}
+                {/* Left Side: List of Suggestions */}
                 <Paper style={{ flex: 1, padding: '16px', maxHeight: '600px', overflowY: 'auto' }}>
                     <Typography variant="h6" gutterBottom>
-                        Results
+                        Suggestions
                     </Typography>
                     {isLoading && <Typography>Loading...</Typography>}
                     {isError && <Typography>Error fetching data</Typography>}
                     {!isLoading && !isError && (
                         <List>
                             {data?.map((item, index) => (
-                                <ListItem button key={index} onClick={() => handleItemClick(item)}>
+                                <ListItem button key={index} onClick={() => handleSelectItem(item)}>
                                     <ListItemText primary={item.name || item.title} />
                                 </ListItem>
                             ))}
@@ -110,7 +88,7 @@ function App() {
                 </Paper>
             </Box>
         </Container>
-    );
+    )
 }
 
-export default App;
+export default App
