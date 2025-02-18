@@ -17,7 +17,7 @@ export function useStarWarData ({entities: endpoints = [], searchQuery}) {
 
 }
 
-/* Alternative Approach */
+/** Alternative Approach **/
 export function useStarWarData2 ({entities: endpoints = [], searchQuery}) {
 
     const planetsQuery = useQuery({

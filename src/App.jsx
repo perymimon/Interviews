@@ -1,18 +1,23 @@
 import {
-    Box, CircularProgress, Container, List, ListItem, ListItemText, Paper,
-    TextField, ToggleButton, ToggleButtonGroup, Typography,
+    AppBar, Box, Container, List, ListItem, ListItemText, Typography,
 } from '@mui/material'
+import {Eclipse, Film, Users} from "lucide-react"
 import React, {useState} from 'react'
-import {useStarWarData} from './data/star-war-data.js'
+import {Card} from './components/my-card-components.jsx'
+import ResponsiveBox from './components/my-responsive-box.jsx'
+import {SearchTextField} from './components/my-search-component.jsx'
+import {Toggles} from './components/my-toggles-components.jsx'
+import {useStarWarData} from './data/star-wars-data.js'
 
-function App() {
+function App () {
+    // const [endpoints, setendpoints] = useState(['planets', 'people', 'films'])
     const [endpoints, setendpoints] = useState([])
     const [searchQuery, setSearchQuery] = useState('')
     const [selectedItem, setSelectedItem] = useState(null)
 
     const {data, isLoading, isError} = useStarWarData({
-        searchQuery:searchQuery,
-        entities:endpoints,
+        searchQuery: searchQuery,
+        entities: endpoints,
     })
 
     const handleSelection = (event, newSelection) => {
@@ -28,66 +33,117 @@ function App() {
     }
 
     return (
-        <Container maxWidth="lg" style={{ marginTop: '20px' }}>
-            {/* Top Bar */}
-            <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-                <Box display="flex" alignItems="center" gap={2}>
-                    <TextField
-                        label="Search"
-                        variant="standard"
-                        value={searchQuery}
-                        helperText="Query starWars db"
-                        onChange={handleSearching}
-                        style={{ width: '300px' }}
-                    />
-                    {/* Loader Indicator */}
-                    {isLoading && <CircularProgress size={24} />}
-                </Box>
-                <ToggleButtonGroup
-                    value={endpoints}
-                    onChange={handleSelection}
-                >
-                    <ToggleButton value="planets" >
-                        Planets
-                    </ToggleButton>
-                    <ToggleButton value="people" >
-                        People
-                    </ToggleButton>
-                    <ToggleButton value="films" >
-                        Films
-                    </ToggleButton>
-                </ToggleButtonGroup>
-            </Box>
+        <Box sx={{
+            height: "100dvh",
+            display: "flex",
+            flexDirection: "column",
+            gap: 2,
+        }}>
+            <AppBar position="static" sx={{
+                display: "flex",
+                flexDirection: "row",
+                gap: 1,
+            }}>
+                {/*Logo Image*/}
+                <Box component="img"
+                     src="/starwars-db-icon-no-bg.svg"
+                     sx={{width: '2em'}}
+                     alt="Logo"
+                />
+                <Typography variant="h5" color="primary">
+                    StarWars DB
+                </Typography>
+            </AppBar>
 
             {/* Main Content */}
-            <Box display="flex" gap={3}>
-                {/* Left Side: List of Suggestions */}
-                <Paper style={{ flex: 1, padding: '16px', maxHeight: '600px', overflowY: 'auto' }}>
-                    <Typography variant="h6" gutterBottom>
-                        Suggestions
+            <Container component="main" sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 2,
+                flex: 1,
+            }}>
+                <Box sx={{textAlign: "center"}}>
+                    <Typography variant="h2" component="h1" color="primary"
+                                gutterBottom>
+                        Explore the Galaxy Far, Far Away
                     </Typography>
-                    {isLoading && <Typography>Loading...</Typography>}
-                    {isError && <Typography>Error fetching data</Typography>}
-                    {!isLoading && !isError && (
-                        <List>
-                            {data?.map((item, index) => (
-                                <ListItem button key={index} onClick={() => handleSelectItem(item)}>
-                                    <ListItemText primary={item.name || item.title} />
-                                </ListItem>
-                            ))}
-                        </List>
-                    )}
-                </Paper>
+                    <Typography variant="h5" component="p"
+                                color="text.secondary" paragraph>
+                        Your ultimate source for Star Wars information
+                    </Typography>
+                </Box>
 
-                {/* Right Side: JSON Details */}
-                <Paper style={{ flex: 1, padding: '16px', maxHeight: '600px', overflowY: 'auto' }}>
-                    <Typography variant="h6" gutterBottom>
-                        Details
-                    </Typography>
-                    <pre>{JSON.stringify(selectedItem, null, 2)}</pre>
-                </Paper>
-            </Box>
-        </Container>
+                <Box display="flex" gap={2} sx={(theme)=>({
+                    position:'sticky',
+                    top:'2em',
+                    zIndex:1,
+                    background:theme.palette.background.default
+                })}>
+                    <SearchTextField
+                        isLoading={isLoading}
+                        fullWidth
+                        variant="outlined"
+                        placeholder="Search the database for planets, people and films"
+                        value={searchQuery}
+
+                        onChange={handleSearching}
+                    />
+                    <Toggles
+                        value={endpoints}
+                        onChange={handleSelection}
+                        options={[{
+                            value: 'planets',
+                            label: <Eclipse/>,
+                            title: 'Planets',
+                        }, {
+                            value: 'people',
+                            label: <Users/>,
+                            title: 'People',
+                        }, {
+                            value: 'films',
+                            label: <Film/>,
+                            title: 'Films',
+                        }]}
+                    />
+                < /Box>
+                <ResponsiveBox>
+
+                    {/* Left Side: List of Suggestions */}
+                    <Card header="Result" >
+                        {isLoading &&
+                            <Typography>Loading...</Typography>}
+                        {isError &&
+                            <Typography>Error fetching
+                                data</Typography>}
+                        {data && (
+                            <List>
+                                {data?.map((item, index) => (
+                                    <ListItem
+                                        sx={{cursor: 'pointer'}}
+                                        component="div"
+                                        key={index}
+                                        onClick={() => handleSelectItem(item)}
+                                    >
+                                        <ListItemText
+                                            primary={item.name || item.title}/>
+                                    </ListItem>
+                                ))}
+                            </List>
+                        )}
+                    </Card>
+
+                    {/* Right Side: JSON Details */}
+                    <Card header="Details" show={!!data} >
+                        {
+                            selectedItem ?
+                                <pre>{JSON.stringify(selectedItem, null, 2)}</pre> :
+                                <Typography>Select item from the result list to
+                                    see more details</Typography>
+                        }
+                    </Card>
+                </ResponsiveBox>
+            </Container>
+        </Box>
     )
 }
 
