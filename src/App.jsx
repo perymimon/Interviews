@@ -10,8 +10,8 @@ import {Toggles} from './components/my-toggles-components.jsx'
 import {useStarWarData} from './data/star-wars-data.js'
 
 function App () {
-    // const [endpoints, setendpoints] = useState(['planets', 'people', 'films'])
-    const [endpoints, setendpoints] = useState([])
+    const [endpoints, setendpoints] = useState(['planets', 'people', 'films'])
+    // const [endpoints, setendpoints] = useState([])
     const [searchQuery, setSearchQuery] = useState('')
     const [selectedItem, setSelectedItem] = useState(null)
 
@@ -115,12 +115,13 @@ function App () {
                         {isError &&
                             <Typography>Error fetching
                                 data</Typography>}
+
                         {data && (
                             <List>
                                 {data?.map((item, index) => (
                                     <ListItem
                                         sx={{cursor: 'pointer'}}
-                                        component="div"
+                                        component="li"
                                         key={index}
                                         onClick={() => handleSelectItem(item)}
                                     >

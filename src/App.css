@@ -1,7 +1,42 @@
 :root{
     --tw-bg-opacity:1;
 }
+*{
+    min-height: 0; /* personal touch (don't copy without know the consequences*/
+}
 body{
-
     background-color:rgb(17 24 39 / var(--tw-bg-opacity, 1))
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    ul {
+        --line-deep:10;
+        perspective: 1000px;
+        /*max-block-size: 100%;*/
+        flex:1;
+        /*overflow: auto;*/
+        & > li {
+            animation: Wheel linear both;
+            animation-timeline: view();
+            animation-range: entry calc(var(--line-deep) * -100%) entry 200%;
+            /*entry-crossing, entry-crossing */
+        }
+    }
+}
+@keyframes Wheel{
+    from{
+        transform-origin: top;
+        transform:
+                translateY(calc(var(--line-deep) * -100%))
+                rotateX(-45deg)
+                translateY(calc(var(--line-deep) * 100%));
+    }
+    90%{
+        transform-origin: top;
+        transform:  translateY(0%) rotateX(-45deg) translateY(0%);
+    }
+    to{
+        transform-origin: top;
+        transform:  translateY(0%) rotateX(0turn) translateY(0%);
+    }
 }

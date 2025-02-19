@@ -9,7 +9,7 @@ export default function ResponsiveBox ({sx, children, ...props}) {
                 flexDirection: "row",
                 gap: 3,
                 flex: 1,
-                flexWrap: "wrap",
+                // flexWrap: "wrap",
                 "@media (orientation: portrait)": {
                     flexDirection: "column",
                 },
