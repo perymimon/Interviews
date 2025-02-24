@@ -8,6 +8,7 @@ import ResponsiveBox from './components/my-responsive-box.jsx'
 import {SearchTextField} from './components/my-search-component.jsx'
 import {Toggles} from './components/my-toggles-components.jsx'
 import {useStarWarData} from './data/star-wars-data.js'
+import {useDebounce} from './hooks/useDebaunce.js'
 
 function App () {
     const [endpoints, setendpoints] = useState(['planets', 'people', 'films'])
@@ -28,9 +29,9 @@ function App () {
         setSearchQuery(event.target.value)
     }
 
-    const handleSelectItem = (item) => {
+    const handleSelectItem = useDebounce(item => {
         setSelectedItem(item)
-    }
+    }, 100)
 
     return (
         <Box sx={{

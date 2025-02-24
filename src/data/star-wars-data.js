@@ -3,6 +3,7 @@ import axios from 'axios'
 
 const baseUrl = 'https://swapi.dev/api/'
 
+
 export function useStarWarData ({entities: endpoints = [], searchQuery}) {
     const uniqueObj = Object.fromEntries(endpoints.map(key => [key, true]))
     return useQuery({
